@@ -2,6 +2,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Fabric.Web.Configuration;
 
+/// <summary>
+/// Database connection configuration.
+/// </summary>
 public class DatabaseConfiguration
 {
     public DatabaseType DatabaseType { get; init; }
@@ -25,11 +28,19 @@ public class DatabaseConfiguration
         DatabaseVersion = databaseVersion;
     }
 
+    /// <summary>
+    /// Get database connection string.
+    /// </summary>
+    /// <returns>Database connection string.</returns>
     internal string GetConnectionString() => $"Server={Server};" +
                                              $"Port={Port};" +
                                              $"Username={Username};" +
                                              $"Password={Password};" +
                                              $"Database={Database}";
 
+    /// <summary>
+    /// Get database server version. The method is only needed in specific cases, such as when the database is MySQL.
+    /// </summary>
+    /// <returns>A database server version of type ServerVersion.</returns>
     internal ServerVersion GetServerVersion() => ServerVersion.Parse(DatabaseVersion);
 }

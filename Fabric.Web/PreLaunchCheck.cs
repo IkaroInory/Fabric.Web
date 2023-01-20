@@ -4,8 +4,16 @@ using Fabric.Web.Exception;
 
 namespace Fabric.Web;
 
+/// <summary>
+/// Pre launch check service class.
+/// </summary>
 internal class PreLaunchCheck
 {
+    /// <summary>
+    /// Check branch specification in Fabric.Web.
+    /// </summary>
+    /// <exception cref="BranchDictionaryException">The count of branch dictionary is not equals the count of the enum.</exception>
+    /// <exception cref="BranchException">The count of dictionary is not match the enumeration.</exception>
     private static void BranchCheck()
     {
         var branches = AppDomain.CurrentDomain.GetAssemblies()
@@ -31,6 +39,9 @@ internal class PreLaunchCheck
         }
     }
 
+    /// <summary>
+    /// Check all Fabric.Web specifications.
+    /// </summary>
     internal static void CheckAll()
     {
         var methods = typeof(PreLaunchCheck).GetMethods(BindingFlags.Static | BindingFlags.NonPublic)

@@ -9,11 +9,19 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Fabric.Web;
 
+/// <summary>
+/// Fabric.Web global configuration class.
+/// </summary>
 public static class FabricWebConfiguration
 {
-    private static void AddContext(this IServiceCollection service, DatabaseConfiguration databaseConfiguration)
+    /// <summary>
+    /// Register a DbContext subclass as a scoped service in the ASP.NET Core application service provider.
+    /// </summary>
+    /// <param name="services">A collection of services for the application to compose. This is useful for adding user provided or framework provided services.</param>
+    /// <param name="databaseConfiguration">A configuration of database. This is required to connect the database.</param>
+    private static void AddContext(this IServiceCollection services, DatabaseConfiguration databaseConfiguration)
     {
-        service.AddDbContext<Context>(options =>
+        services.AddDbContext<Context>(options =>
         {
             switch (databaseConfiguration.DatabaseType)
             {
@@ -34,7 +42,11 @@ public static class FabricWebConfiguration
         });
     }
 
-    private static void AddIocComponent(this IServiceCollection service)
+    /// <summary>
+    /// Add components into the IOC in the APS.NET Core application.
+    /// </summary>
+    /// <param name="services">A collection of services for the application to compose. This is useful for adding user provided or framework provided services.</param>
+    private static void AddIocComponents(this IServiceCollection services)
     {
         var attributes = new[] { typeof(ServiceAttribute), typeof(RepositoryAttribute) };
 
@@ -49,22 +61,33 @@ public static class FabricWebConfiguration
                 if (!@interface.GetInterfaces().Contains(typeof(IOriginalRepository)) && !@interface.GetInterfaces().Contains(typeof(IOriginalService)))
                     continue;
 
-                service.AddTransient(@interface, type);
+                services.AddTransient(@interface, type);
             }
         }
     }
 
+    /// <summary>
+    /// Add Fabric.Web Service into the web application.
+    /// </summary>
+    /// <param name="services">A collection of services for the application to compose. This is useful for adding user provided or framework provided services.</param>
+    /// <param name="databaseConfiguration">A configuration of database. This is required to connect the database.</param>
     public static void AddFabricWebService(this IServiceCollection services, DatabaseConfiguration databaseConfiguration)
     {
         services.AddFabricWebService(databaseConfiguration, ArraySegment<FormatterType>.Empty);
     }
 
+    /// <summary>
+    /// Add Fabric.Web Service into the web application.
+    /// </summary>
+    /// <param name="services">A collection of services for the application to compose. This is useful for adding user provided or framework provided services.</param>
+    /// <param name="databaseConfiguration">A configuration of database. This is required to connect the database.</param>
+    /// <param name="formatterTypes">A collection of formatter type you need.</param>
     public static void AddFabricWebService(this IServiceCollection services, DatabaseConfiguration databaseConfiguration, IEnumerable<FormatterType> formatterTypes)
     {
         PreLaunchCheck.CheckAll();
 
         services.AddContext(databaseConfiguration);
-        services.AddIocComponent();
+        services.AddIocComponents();
         foreach (var formatterType in formatterTypes)
         {
             services.AddFormatter(formatterType);
