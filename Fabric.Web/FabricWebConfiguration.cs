@@ -1,4 +1,5 @@
 using System.Reflection;
+using Fabric.Web.Branch;
 using Fabric.Web.Configuration;
 using Fabric.Web.Formatter;
 using Fabric.Web.Repository;
@@ -45,23 +46,28 @@ public static class FabricWebConfiguration
             var interfaces = type.GetInterfaces();
             foreach (var @interface in interfaces)
             {
-                if (
-                    !@interface.GetInterfaces().Contains(typeof(IOriginalRepository)) &&
-                    !@interface.GetInterfaces().Contains(typeof(IOriginalService))
-                ) continue;
+                if (!@interface.GetInterfaces().Contains(typeof(IOriginalRepository)) && !@interface.GetInterfaces().Contains(typeof(IOriginalService)))
+                    continue;
 
                 service.AddTransient(@interface, type);
             }
         }
     }
 
-    public static void AddFabricWebService(this IServiceCollection service, DatabaseConfiguration databaseConfiguration, FormatterType[] formatterTypes)
+    public static void AddFabricWebService(this IServiceCollection services, DatabaseConfiguration databaseConfiguration)
     {
-        service.AddContext(databaseConfiguration);
-        service.AddIocComponent();
+        services.AddFabricWebService(databaseConfiguration, ArraySegment<FormatterType>.Empty);
+    }
+
+    public static void AddFabricWebService(this IServiceCollection services, DatabaseConfiguration databaseConfiguration, IEnumerable<FormatterType> formatterTypes)
+    {
+        PreLaunchCheck.CheckAll();
+
+        services.AddContext(databaseConfiguration);
+        services.AddIocComponent();
         foreach (var formatterType in formatterTypes)
         {
-            service.AddFormatter(formatterType);
+            services.AddFormatter(formatterType);
         }
     }
 }

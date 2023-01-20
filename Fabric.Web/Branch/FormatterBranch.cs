@@ -1,14 +1,17 @@
 using Fabric.Web.Converter;
+using Fabric.Web.Formatter;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Fabric.Web.Formatter;
+namespace Fabric.Web.Branch;
 
-public static class FormatterFactory
+[Branch]
+public static class FormatterBranch
 {
+    [BranchDictionary]
     private static readonly Dictionary<FormatterType, Action<IServiceCollection>> dictionary;
 
-    static FormatterFactory()
+    static FormatterBranch()
     {
         dictionary = new Dictionary<FormatterType, Action<IServiceCollection>>
         {
